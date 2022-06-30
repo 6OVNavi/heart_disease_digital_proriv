@@ -12,7 +12,7 @@ seed_everything(seed)
 
 train=pd.read_csv('train.csv')
 test=pd.read_csv('test_dataset_test.csv')
-
+train['Пол']=train['Пол'].fillna('М')
 #train=train.drop(columns=['ID_y'])
 
 train['ID_y']=train['ID']
@@ -21,6 +21,36 @@ categorical_columns=['Пол','Семья',"Этнос","Национально�
 
 train.columns = train.columns.str.replace('Частота пасс кур', 'smoking_intensity')
 test.columns = test.columns.str.replace('Частота пасс кур', 'smoking_intensity')
+OHE=['Алкоголь','Статус Курения','Профессия','Образование','Национальность','Этнос','Семья','Пол','Религия']
+
+train.Семья.replace({"вдовец / вдова": 'в разводе',
+                           "гражданский брак / проживание с партнером": 'other',
+                           "никогда не был(а) в браке": 'other',
+                           "раздельное проживание (официально не разведены)": 'other',
+                           }, inplace=True)
+test.Семья.replace({"вдовец / вдова": 'в разводе',
+                           "гражданский брак / проживание с партнером": 'other',
+                           "никогда не был(а) в браке": 'other',
+                           "раздельное проживание (официально не разведены)": 'other',
+                           }, inplace=True)
+
+train=train.drop(columns=['Этнос'])
+test=test.drop(columns=['Этнос'])
+categorical_columns.remove('Этнос')
+
+train=train.drop(columns=['Национальность'])
+test=test.drop(columns=['Национальность'])
+categorical_columns.remove('Национальность')
+
+train.Семья.replace({"Атеист / агностик": 'other',
+                           "Нет": 'other',
+                           "Ислам": 'other',
+                           }, inplace=True)
+test.Семья.replace({"Атеист / агностик": 'other',
+                           "Нет": 'other',
+                           "Ислам": 'other',
+                           }, inplace=True)
+
 
 train.smoking_intensity.replace({"1-2 раза в неделю": 1.5,
                            "3-6 раз в неделю": 4.5,
@@ -82,6 +112,19 @@ for col in train.columns:
     #for j in range()
 '''
 
+'''for i in OHE:
+    one_hot = pd.get_dummies(train[i])
+    one_hot2=pd.get_dummies(test[i])
+    #print(train)
+    train = train.drop(i, axis=1)
+    test = test.drop(i, axis=1)
+    # Join the encoded df
+    train = train.join(one_hot)
+    test = test.join(one_hot2)
+    #print(train)
+    #break
+#TODO ^ OHE
+'''
 
 for i in range(len(categorical_columns)):
     enc = LabelEncoder()
@@ -167,6 +210,7 @@ else:
                 model.fit(X_tr,y_tr[to_drop[i]],eval_set=(X_test,y_test[to_drop[i]]),verbose=0)
                 val_test=np.array(model.predict(X_test))
                 val_tests=val_test+val_tests
+
                 test_pr=model.predict(test)
                 pred=pred+test_pr
                 best_its.append(
