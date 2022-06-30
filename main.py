@@ -42,15 +42,15 @@ train=train.drop(columns=['Национальность'])
 test=test.drop(columns=['Национальность'])
 categorical_columns.remove('Национальность')
 
-train.Семья.replace({"Атеист / агностик": 'other',
-                           "Нет": 'other',
-                           "Ислам": 'other',
+'''train.Религия.replace({"Нет": 'Атеист / агностик',
+                           "Ислам": 'Христианство',
+                      'Индуизм':'Христианство'
                            }, inplace=True)
-test.Семья.replace({"Атеист / агностик": 'other',
-                           "Нет": 'other',
-                           "Ислам": 'other',
+test.Религия.replace({"Нет": 'Атеист / агностик',
+                           "Ислам": 'Христианство',
+                      'Индуизм':'Христианство'
                            }, inplace=True)
-
+'''
 
 train.smoking_intensity.replace({"1-2 раза в неделю": 1.5,
                            "3-6 раз в неделю": 4.5,
