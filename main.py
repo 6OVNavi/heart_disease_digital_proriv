@@ -120,7 +120,7 @@ X=train.drop(columns=to_drop)
 Y=train.drop(columns=X.columns)
 #print(Y.columns)
 from sklearn.model_selection import train_test_split
-
+from sklearn.metrics import recall_score
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=seed)
 best_its=[]
 X_test = X_test.drop(columns=['ID'])
@@ -129,20 +129,7 @@ cols=X_train.columns
 import pickle
 val=True
 load_mode=False
-grid=False
 test=test.drop(columns=['ID'])
-
-parameters = {'max_depth': [1, 4, 6],
-              'learning_rate': [0.1, 0.01, 0.001, 0.0001],
-              'iterations': [30,50, 100, 200,300],
-              'random_strength':[None,0.1,0.2,0.3]
-              }
-from sklearn.model_selection import GridSearchCV
-grid_params_models=[{'nan_mode': 'Min', 'eval_metric': 'Recall', 'iterations': 30, 'sampling_frequency': 'PerTree', 'leaf_estimation_method': 'Newton', 'grow_policy': 'SymmetricTree', 'penalties_coefficient': 1, 'boosting_type': 'Plain', 'model_shrink_mode': 'Constant', 'feature_border_type': 'GreedyLogSum',  'l2_leaf_reg': 3, 'random_strength': 0.30000001192092896, 'rsm': 1, 'boost_from_average': False, 'model_size_reg': 0.5,  'subsample': 0.800000011920929, 'use_best_model': False, 'class_names': [0, 1], 'random_seed': 0, 'depth': 4, 'posterior_sampling': False, 'border_count': 254, 'classes_count': 0, 'auto_class_weights': 'None', 'sparse_features_conflict_fraction': 0, 'leaf_estimation_backtracking': 'AnyImprovement', 'best_model_min_trees': 1, 'model_shrink_rate': 0, 'min_data_in_leaf': 1, 'loss_function': 'Logloss', 'learning_rate': 0.10000000149011612, 'score_function': 'Cosine', 'task_type': 'CPU', 'leaf_estimation_iterations': 10, 'bootstrap_type': 'MVS', 'max_leaves': 16},
-                    {'nan_mode': 'Min', 'eval_metric': 'Recall', 'iterations': 100, 'sampling_frequency': 'PerTree', 'leaf_estimation_method': 'Newton', 'grow_policy': 'SymmetricTree', 'penalties_coefficient': 1, 'boosting_type': 'Plain', 'model_shrink_mode': 'Constant', 'feature_border_type': 'GreedyLogSum', 'l2_leaf_reg': 3, 'random_strength': 0.10000000149011612, 'rsm': 1, 'boost_from_average': False, 'model_size_reg': 0.5, 'subsample': 0.800000011920929, 'use_best_model': False, 'class_names': [0, 1], 'random_seed': 0, 'depth': 4, 'posterior_sampling': False, 'border_count': 254, 'classes_count': 0, 'auto_class_weights': 'None', 'sparse_features_conflict_fraction': 0, 'leaf_estimation_backtracking': 'AnyImprovement', 'best_model_min_trees': 1, 'model_shrink_rate': 0, 'min_data_in_leaf': 1, 'loss_function': 'Logloss', 'learning_rate': 0.10000000149011612, 'score_function': 'Cosine', 'task_type': 'CPU', 'leaf_estimation_iterations': 10, 'bootstrap_type': 'MVS', 'max_leaves': 16},
-                    {'nan_mode': 'Min', 'eval_metric': 'Recall', 'iterations': 30, 'sampling_frequency': 'PerTree', 'leaf_estimation_method': 'Newton', 'grow_policy': 'SymmetricTree', 'penalties_coefficient': 1, 'boosting_type': 'Plain', 'model_shrink_mode': 'Constant', 'feature_border_type': 'GreedyLogSum',  'l2_leaf_reg': 3, 'random_strength': 0.20000000298023224, 'rsm': 1, 'boost_from_average': False, 'model_size_reg': 0.5,  'subsample': 0.800000011920929, 'use_best_model': False, 'class_names': [0, 1], 'random_seed': 0, 'depth': 6, 'posterior_sampling': False, 'border_count': 254, 'classes_count': 0, 'auto_class_weights': 'None', 'sparse_features_conflict_fraction': 0, 'leaf_estimation_backtracking': 'AnyImprovement', 'best_model_min_trees': 1, 'model_shrink_rate': 0, 'min_data_in_leaf': 1, 'loss_function': 'Logloss', 'learning_rate': 0.0010000000474974513, 'score_function': 'Cosine', 'task_type': 'CPU', 'leaf_estimation_iterations': 10, 'bootstrap_type': 'MVS', 'max_leaves': 64},
-                    {'nan_mode': 'Min', 'eval_metric': 'Recall', 'iterations': 200, 'sampling_frequency': 'PerTree', 'leaf_estimation_method': 'Newton', 'grow_policy': 'SymmetricTree', 'penalties_coefficient': 1, 'boosting_type': 'Plain', 'model_shrink_mode': 'Constant', 'feature_border_type': 'GreedyLogSum','l2_leaf_reg': 3, 'random_strength': 0.20000000298023224, 'rsm': 1, 'boost_from_average': False, 'model_size_reg': 0.5,  'subsample': 0.800000011920929, 'use_best_model': False, 'class_names': [0, 1], 'random_seed': 0, 'depth': 4, 'posterior_sampling': False, 'border_count': 254, 'classes_count': 0, 'auto_class_weights': 'None', 'sparse_features_conflict_fraction': 0, 'leaf_estimation_backtracking': 'AnyImprovement', 'best_model_min_trees': 1, 'model_shrink_rate': 0, 'min_data_in_leaf': 1, 'loss_function': 'Logloss', 'learning_rate': 0.10000000149011612, 'score_function': 'Cosine', 'task_type': 'CPU', 'leaf_estimation_iterations': 10, 'bootstrap_type': 'MVS', 'max_leaves': 16},
-                    {'nan_mode': 'Min', 'eval_metric': 'Recall', 'iterations': 200, 'sampling_frequency': 'PerTree', 'leaf_estimation_method': 'Newton', 'grow_policy': 'SymmetricTree', 'penalties_coefficient': 1, 'boosting_type': 'Plain', 'model_shrink_mode': 'Constant', 'feature_border_type': 'GreedyLogSum', 'l2_leaf_reg': 3, 'random_strength': 0.10000000149011612, 'rsm': 1, 'boost_from_average': False, 'model_size_reg': 0.5,  'subsample': 0.800000011920929, 'use_best_model': False, 'class_names': [0, 1], 'random_seed': 0, 'depth': 4, 'posterior_sampling': False, 'border_count': 254, 'classes_count': 0, 'auto_class_weights': 'None', 'sparse_features_conflict_fraction': 0, 'leaf_estimation_backtracking': 'AnyImprovement', 'best_model_min_trees': 1, 'model_shrink_rate': 0, 'min_data_in_leaf': 1, 'loss_function': 'Logloss', 'learning_rate': 0.10000000149011612, 'score_function': 'Cosine', 'task_type': 'CPU', 'leaf_estimation_iterations': 10, 'bootstrap_type': 'MVS', 'max_leaves': 16}]
 if load_mode:
     models=['model0_0.9325842696629213.pkl','model1_1.0.pkl','model2_0.9629629629629629.pkl','model3_0.9.pkl','model4_0.8823529411764706.pkl']
     #0- unknown 1-default 2-max_depth=1 3-max_depth=1 4- max_depth=1
@@ -164,30 +151,35 @@ else:
 
             X1=X_temp[X_temp[to_drop[i]]==1]
             X2=X_temp[X_temp[to_drop[i]]==0]
-            X2=X2.sample(n=int(len(X1)*1))
+            fraction=len(X2)//len(X1)
+            val_tests=np.zeros(len(X_test))
+            pred=np.zeros(len(test))
+            print(len(X1),len(X2),'-@@-')
+            for z in range(fraction):
+                X2_2=X2[z*len(X1):(z+1)*len(X1)]
+                X_fin=pd.concat([X1,X2_2])
+                print(z*len(X1),(z+1)*len(X1))
+                X_tr=X_fin.drop(columns=y_train.columns)
+                y_tr=X_fin.drop(columns=X_train.columns)
 
-            X_fin=pd.concat([X1,X2])
-
-            X_tr=X_fin.drop(columns=y_train.columns)
-            y_tr=X_fin.drop(columns=X_train.columns)
-            if grid:
-                X_=pd.concat([X_tr,X_test])
-                Y_=pd.concat([y_tr,y_test])
-                #print(X_)
-                model = CatBoostClassifier(eval_metric='Recall', random_state=seed,verbose=0)
-                model.grid_search(parameters,X=X_,y=Y_[to_drop[i]],verbose=False)
-                #Grid_CBC = GridSearchCV(estimator=model, param_grid=parameters, cv=2, n_jobs=-1,verbose=0)
-                #Grid_CBC.fit(X_,Y_)
-                print(model.get_all_params(),i,'-------')
-            else:
                 model = CatBoostClassifier(iterations=300, use_best_model=True, eval_metric='Recall', random_state=seed,learning_rate=0.001)
 
                 model.fit(X_tr,y_tr[to_drop[i]],eval_set=(X_test,y_test[to_drop[i]]),verbose=0)
+                val_test=np.array(model.predict(X_test))
+                val_tests=val_test+val_tests
+                test_pr=model.predict(test)
+                pred=pred+test_pr
                 best_its.append(
                     (model.best_score_['learn']['Recall'], model.best_score_['validation']['Recall'],
                      model.best_iteration_))
                 with open(f'model{i}_{model.best_score_["validation"]["Recall"]}.pkl', 'wb') as f:
                     pickle.dump(model, f)
+            val_tests=val_tests/fraction
+            val_tests=list(map(lambda x: round(x),val_tests))
+            print()
+            print(recall_score(y_test[to_drop[i]],val_tests),'-------recall',i)
+            pred=pred/fraction
+            pred = list(map(lambda x: round(x), pred))
         else:
             model = CatBoostClassifier(iterations=its[i], random_state=seed)
 
@@ -205,10 +197,10 @@ else:
             X_tr=X_tr.drop(columns=['ID'])
             #print(X_tr,y_tr)
             model.fit(X_tr, y_tr[to_drop[i]], verbose=1)
-        pred=model.predict(test)
+        #pred=model.predict(test)
         sub[to_drop[i]]=pred
 
-    if val and not grid:
+    if val:
         print(best_its)
         print((best_its[0][1]+best_its[1][1]+best_its[2][1]+best_its[3][1]+best_its[4][1])/5)
 sub.to_csv('final.csv',index=False)
