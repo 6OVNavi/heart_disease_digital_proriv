@@ -12,16 +12,32 @@ seed_everything(seed)
 
 train=pd.read_csv('train.csv')
 test=pd.read_csv('test_dataset_test.csv')
-train['Пол']=train['Пол'].fillna('М')
+#train['Пол']=train['Пол'].fillna('М')
 #train=train.drop(columns=['ID_y'])
 
 train['ID_y']=train['ID']
 
-categorical_columns=['Пол','Семья',"Этнос","Национальность","Религия","Образование","Профессия","Статус Курения","Алкоголь"]
+categorical_columns=['Пол','Семья',"Этнос","Национальность","Религия","Образование","Профессия","smoking_status","Алкоголь"]
 
 train.columns = train.columns.str.replace('Частота пасс кур', 'smoking_intensity')
 test.columns = test.columns.str.replace('Частота пасс кур', 'smoking_intensity')
-OHE=['Алкоголь','Статус Курения','Профессия','Образование','Национальность','Этнос','Семья','Пол','Религия']
+
+train.columns = train.columns.str.replace('Статус Курения', 'smoking_status')
+test.columns = test.columns.str.replace('Статус Курения', 'smoking_status')
+
+
+'''train.Профессия.replace({"вооруженные силы": 'служащие',
+                           "техники и младшие специалисты": 'дипломированные специалисты',
+                           "ведение домашнего хозяйства": 'квалифицированные работники сельского хозяйства и рыболовного',
+                           "операторы и монтажники установок и машинного оборудования": 'низкоквалифицированные работники',
+                         "ремесленники и представители других отраслей промышленности": "дипломированные специалисты",
+                           }, inplace=True)
+test.Профессия.replace({"вооруженные силы": 'служащие',
+                           "техники и младшие специалисты": 'дипломированные специалисты',
+                           "ведение домашнего хозяйства": 'квалифицированные работники сельского хозяйства и рыболовного',
+                           "операторы и монтажники установок и машинного оборудования": 'низкоквалифицированные работники',
+                         "ремесленники и представители других отраслей промышленности": "дипломированные специалисты",
+                           }, inplace=True)'''
 
 train.Семья.replace({"вдовец / вдова": 'в разводе',
                            "гражданский брак / проживание с партнером": 'other',
@@ -34,13 +50,71 @@ test.Семья.replace({"вдовец / вдова": 'в разводе',
                            "раздельное проживание (официально не разведены)": 'other',
                            }, inplace=True)
 
+train.smoking_status.replace({"Никогда не курил": 'Никогда не курил(а)',
+                           }, inplace=True)
+test.smoking_status.replace({"Никогда не курил": 'Никогда не курил(а)',
+                           }, inplace=True)
+'''train.Религия.replace({"Нет": 'Атеист / агностик',
+                           "Ислам": 'Христианство',
+                      'Индуизм':'Христианство'
+                           }, inplace=True)
+test.Религия.replace({"Нет": 'Атеист / агностик',
+                           "Ислам": 'Христианство',
+                      'Индуизм':'Христианство'
+                           }, inplace=True)'''
+
+train.Этнос.replace({"другая азиатская (Корея, Малайзия, Таиланд, Вьетнам, Казахстан, Киргизия, Туркмения, Узбекистан, Таджикистан)": 'other',
+                           "прочее (любая иная этно-расовая группа, не представленная выше)": 'other',
+                           }, inplace=True)
+test.Этнос.replace({"другая азиатская (Корея, Малайзия, Таиланд, Вьетнам, Казахстан, Киргизия, Туркмения, Узбекистан, Таджикистан)": 'other',
+                           "прочее (любая иная этно-расовая группа, не представленная выше)": 'other',
+                           }, inplace=True)
+#print(train['Этнос'].value_counts())
+
+for i in range(len(train)):
+    if train['Национальность'][i]!='Русские':
+        train['Национальность'][i]='other'
+for i in range(len(test)):
+    if test['Национальность'][i]!='Русские':
+        test['Национальность'][i]='other'
+
+
+
 train=train.drop(columns=['Этнос'])
 test=test.drop(columns=['Этнос'])
-categorical_columns.remove('Этнос')
+categorical_columns.remove('Этнос') #PROBABLY SAME AS FOR NEXT 2
 
 train=train.drop(columns=['Национальность'])
 test=test.drop(columns=['Национальность'])
-categorical_columns.remove('Национальность')
+categorical_columns.remove('Национальность') #USING IT LOWERS VALIDATION BY ~0.01
+
+#train=train.drop(columns=['Религия'])
+#test=test.drop(columns=['Религия'])
+#categorical_columns.remove('Религия') #USING IT LOWERS VALIDATION BY ~0.01
+
+#train=train.drop(columns=['Прекращение работы по болезни'])
+#test=test.drop(columns=['Прекращение работы по болезни'])
+
+#train=train.drop(columns=['Хроническое заболевание легких'])
+#test=test.drop(columns=['Хроническое заболевание легких'])
+
+#train=train.drop(columns=['Бронжиальная астма'])
+#test=test.drop(columns=['Бронжиальная астма'])
+#print(train.columns)
+#train=train.drop(columns=['Туберкулез легких '])
+#test=test.drop(columns=['Туберкулез легких '])
+
+#train=train.drop(columns=['Травмы за год'])
+#test=test.drop(columns=['Травмы за год'])
+
+train=train.drop(columns=['ВИЧ/СПИД'])
+test=test.drop(columns=['ВИЧ/СПИД'])
+
+#train=train.drop(columns=['Спорт, клубы'])
+#test=test.drop(columns=['Спорт, клубы'])
+
+#train=train.drop(columns=['Религия, клубы'])
+#test=test.drop(columns=['Религия, клубы'])
 
 '''train.Религия.replace({"Нет": 'Атеист / агностик',
                            "Ислам": 'Христианство',
@@ -140,8 +214,7 @@ for i in range(len(categorical_columns)):
     test[categorical_columns[i]] = enc.transform(test[categorical_columns[i]].astype(str))
 # TODO ^ FILLING CATEGORICALS
 
-train=train.drop(columns=['ВИЧ/СПИД'])
-test=test.drop(columns=['ВИЧ/СПИД'])
+
 
 to_drop=["Артериальная гипертензия","ОНМК","Стенокардия, ИБС, инфаркт миокарда","Сердечная недостаточность","Прочие заболевания сердца",'ID_y']
 temp=train[to_drop]
@@ -245,8 +318,11 @@ else:
         sub[to_drop[i]]=pred
 
     if val:
+        sum_=0
         print(best_its)
-        print((best_its[0][1]+best_its[1][1]+best_its[2][1]+best_its[3][1]+best_its[4][1])/5)
+        for g in best_its:
+            sum_+=g[1]
+        print(sum_/len(best_its))
 sub.to_csv('final.csv',index=False)
 
 #[(0.9658119658119658, 0.8736842105263158, 2), (1.0, 1.0, 12), (1.0, 0.8888888888888888, 12), (1.0, 0.75, 2), (1.0, 0.8235294117647058, 1)]
